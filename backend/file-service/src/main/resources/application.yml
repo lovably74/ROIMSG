@@ -1,0 +1,25 @@
+server:
+  port: 8085
+
+spring:
+  application:
+    name: file-service
+
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:ROIMSG}
+    username: ${DB_USER:roit}
+    password: ${DB_PASSWORD:fhdlxpzm1*}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+
+jwt:
+  secret: ${JWT_SECRET:your_super_secret_jwt_key_here_change_this_in_production}
+
+file:
+  upload:
+    path: ${UPLOAD_PATH:./uploads}
+    max-size: ${MAX_FILE_SIZE:10485760}
+    allowed-types: ${ALLOWED_FILE_TYPES:jpg,jpeg,png,gif,pdf,txt}
