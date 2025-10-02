@@ -1,0 +1,147 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: auth-service
+  
+  # 데이터베이스 설정
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:ROIMSG}
+    username: ${DB_USER:roit}
+    password: ${DB_PASSWORD:fhdlxpzm1*}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+
+  # JPA 설정
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        jdbc:
+          time_zone: Asia/Seoul
+    open-in-view: false
+
+  # Redis 설정
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      database: ${REDIS_DATABASE:0}
+      timeout: 2000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+
+  # OAuth2 설정
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID:}
+            client-secret: ${GOOGLE_CLIENT_SECRET:}
+            scope:
+              - openid
+              - profile
+              - email
+            redirect-uri: ${GOOGLE_REDIRECT_URI:http://localhost:3000/auth/callback}
+        provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://www.googleapis.com/oauth2/v2/userinfo
+            user-name-attribute: id
+
+# JWT 설정
+jwt:
+  secret: ${JWT_SECRET:your_super_secret_jwt_key_here_change_this_in_production}
+  expiration: ${JWT_EXPIRATION:86400}
+  refresh-expiration: ${JWT_REFRESH_EXPIRATION:604800}
+
+# 멀티테넌시 설정
+multitenancy:
+  default-tenant-id: ${DEFAULT_TENANT_ID:550e8400-e29b-41d4-a716-446655440000}
+  tenant-header: ${TENANT_HEADER:X-Tenant-Id}
+
+# 로깅 설정
+logging:
+  level:
+    com.roimsg.auth: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.web: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# Actuator 설정
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+# Swagger/OpenAPI 설정
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+  show-actuator: true
+
+# 보안 설정
+security:
+  # 세션 설정
+  session:
+    timeout: ${SESSION_TIMEOUT:3600}
+    max-concurrent: ${MAX_CONCURRENT_SESSIONS:3}
+  
+  # 로그인 시도 제한
+  login:
+    max-attempts: ${MAX_LOGIN_ATTEMPTS:5}
+    lockout-duration: ${LOGIN_LOCKOUT_DURATION:900}
+  
+  # 암호화 설정
+  encryption:
+    key: ${ENCRYPTION_KEY:your_32_character_encryption_key_here}
+
+# 파일 업로드 설정
+file:
+  upload:
+    max-size: ${MAX_FILE_SIZE:10485760}
+    path: ${UPLOAD_PATH:./uploads}
+    allowed-types: ${ALLOWED_FILE_TYPES:jpg,jpeg,png,gif,pdf,doc,docx,xls,xlsx,ppt,pptx,txt}
+
+# 이메일 설정 (선택사항)
+mail:
+  host: ${SMTP_HOST:smtp.gmail.com}
+  port: ${SMTP_PORT:587}
+  username: ${SMTP_USER:}
+  password: ${SMTP_PASSWORD:}
+  from: ${SMTP_FROM:noreply@roimsg.com}
+  properties:
+    mail:
+      smtp:
+        auth: true
+        starttls:
+          enable: true

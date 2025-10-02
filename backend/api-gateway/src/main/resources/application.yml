@@ -1,0 +1,155 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  
+  cloud:
+    gateway:
+      routes:
+        # 인증 서비스 라우팅
+        - id: auth-service
+          uri: http://localhost:8081
+          predicates:
+            - Path=/api/auth/**
+          filters:
+            - StripPrefix=2
+        
+        # 사용자 관리 서비스 라우팅
+        - id: user-service
+          uri: http://localhost:8082
+          predicates:
+            - Path=/api/users/**
+          filters:
+            - StripPrefix=2
+            - name: JwtAuthenticationFilter
+        
+        # 메시지 서비스 라우팅
+        - id: message-service
+          uri: http://localhost:8083
+          predicates:
+            - Path=/api/messages/**
+          filters:
+            - StripPrefix=2
+            - name: JwtAuthenticationFilter
+        
+        # 게시판 서비스 라우팅
+        - id: board-service
+          uri: http://localhost:8084
+          predicates:
+            - Path=/api/boards/**
+          filters:
+            - StripPrefix=2
+            - name: JwtAuthenticationFilter
+        
+        # 자료실 서비스 라우팅
+        - id: file-service
+          uri: http://localhost:8085
+          predicates:
+            - Path=/api/files/**
+          filters:
+            - StripPrefix=2
+            - name: JwtAuthenticationFilter
+        
+        # 대시보드 서비스 라우팅
+        - id: dashboard-service
+          uri: http://localhost:8086
+          predicates:
+            - Path=/api/dashboard/**
+          filters:
+            - StripPrefix=2
+            - name: JwtAuthenticationFilter
+      
+      # 글로벌 CORS 설정
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowed-origins: 
+              - "http://localhost:3000"
+              - "http://localhost:3001"
+            allowed-methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowed-headers:
+              - "*"
+            allow-credentials: true
+            max-age: 3600
+
+  # Redis 설정 (Rate Limiting용)
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      database: ${REDIS_DATABASE:0}
+      timeout: 2000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+
+  # 보안 설정
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID:}
+            client-secret: ${GOOGLE_CLIENT_SECRET:}
+            scope:
+              - openid
+              - profile
+              - email
+            redirect-uri: ${GOOGLE_REDIRECT_URI:http://localhost:3000/auth/callback}
+
+# JWT 설정
+jwt:
+  secret: ${JWT_SECRET:your_super_secret_jwt_key_here_change_this_in_production}
+  expiration: ${JWT_EXPIRATION:86400}
+  refresh-expiration: ${JWT_REFRESH_EXPIRATION:604800}
+
+# Rate Limiting 설정
+rate-limit:
+  window-ms: ${RATE_LIMIT_WINDOW_MS:900000}
+  max-requests: ${RATE_LIMIT_MAX_REQUESTS:100}
+
+# 로깅 설정
+logging:
+  level:
+    com.roimsg.gateway: DEBUG
+    org.springframework.cloud.gateway: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# Actuator 설정
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+# 멀티테넌시 설정
+multitenancy:
+  default-tenant-id: ${DEFAULT_TENANT_ID:550e8400-e29b-41d4-a716-446655440000}
+  tenant-header: ${TENANT_HEADER:X-Tenant-Id}
+
+# 보안 헤더 설정
+security:
+  headers:
+    content-security-policy: ${CSP_POLICY:default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'}
+    hsts-max-age: ${HSTS_MAX_AGE:31536000}
+    x-frame-options: ${X_FRAME_OPTIONS:DENY}
+    x-content-type-options: ${X_CONTENT_TYPE_OPTIONS:nosniff}

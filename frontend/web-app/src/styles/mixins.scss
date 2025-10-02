@@ -1,0 +1,334 @@
+// ROIMSG SCSS 믹스인
+// 재사용 가능한 스타일 패턴
+
+// 반응형 믹스인
+@mixin mobile {
+  @media (max-width: #{$breakpoint-sm - 1px}) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media (min-width: #{$breakpoint-sm}) and (max-width: #{$breakpoint-md - 1px}) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media (min-width: #{$breakpoint-md}) {
+    @content;
+  }
+}
+
+@mixin large-desktop {
+  @media (min-width: #{$breakpoint-lg}) {
+    @content;
+  }
+}
+
+// Neumorphism 믹스인
+@mixin neumorphism($background: $surface) {
+  background: $background;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-neumorphism;
+  transition: all $transition-normal;
+}
+
+@mixin neumorphism-inset($background: $surface) {
+  background: $background;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-neumorphism-inset;
+  transition: all $transition-normal;
+}
+
+@mixin neumorphism-hover {
+  &:hover {
+    box-shadow: $shadow-neumorphism-inset;
+  }
+}
+
+@mixin neumorphism-active {
+  &:active {
+    box-shadow: $shadow-neumorphism-inset;
+    transform: translateY(1px);
+  }
+}
+
+// 버튼 믹스인
+@mixin button-base {
+  @include neumorphism;
+  padding: $spacing-md $spacing-lg;
+  border: none;
+  cursor: pointer;
+  font-weight: $font-weight-medium;
+  color: $text-primary;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-sm;
+  transition: all $transition-normal;
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  
+  @include neumorphism-hover;
+  @include neumorphism-active;
+}
+
+@mixin button-primary {
+  @include button-base;
+  color: $primary;
+  
+  &:hover {
+    color: $primary-dark;
+  }
+}
+
+@mixin button-secondary {
+  @include button-base;
+  color: $text-secondary;
+  
+  &:hover {
+    color: $text-primary;
+  }
+}
+
+// 카드 믹스인
+@mixin card {
+  @include neumorphism;
+  padding: $spacing-xl;
+  margin-bottom: $spacing-lg;
+}
+
+@mixin card-hover {
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-lg;
+  }
+}
+
+// 입력 필드 믹스인
+@mixin input-base {
+  @include neumorphism;
+  padding: $spacing-md;
+  border: none;
+  outline: none;
+  font-size: $font-size-base;
+  color: $text-primary;
+  width: 100%;
+  
+  &::placeholder {
+    color: $text-disabled;
+  }
+  
+  &:focus {
+    box-shadow: $shadow-neumorphism-inset;
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+// 그리드 믹스인
+@mixin grid-auto-fit($min-width: 250px, $gap: $spacing-lg) {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax($min-width, 1fr));
+  gap: $gap;
+}
+
+@mixin grid-auto-fill($min-width: 250px, $gap: $spacing-lg) {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax($min-width, 1fr));
+  gap: $gap;
+}
+
+// 플렉스 믹스인
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@mixin flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+// 텍스트 믹스인
+@mixin text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@mixin text-clamp($lines: 2) {
+  display: -webkit-box;
+  -webkit-line-clamp: $lines;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+// 애니메이션 믹스인
+@mixin fade-in($duration: $transition-normal) {
+  animation: fadeIn $duration ease-in-out;
+}
+
+@mixin slide-up($duration: $transition-normal) {
+  animation: slideUp $duration ease-in-out;
+}
+
+@mixin rotate($duration: 2s) {
+  animation: rotate $duration linear infinite;
+}
+
+@mixin flip($duration: 0.6s) {
+  animation: flip $duration ease-in-out;
+}
+
+// 애니메이션 키프레임
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes flip {
+  0% {
+    transform: perspective(400px) rotateY(0);
+  }
+  40% {
+    transform: perspective(400px) rotateY(-90deg);
+  }
+  60% {
+    transform: perspective(400px) rotateY(-90deg);
+  }
+  100% {
+    transform: perspective(400px) rotateY(0);
+  }
+}
+
+// 접근성 믹스인
+@mixin sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@mixin focus-visible {
+  &:focus-visible {
+    outline: 2px solid $primary;
+    outline-offset: 2px;
+  }
+}
+
+// 스크롤바 믹스인
+@mixin custom-scrollbar($width: 8px, $track-color: $surface-variant, $thumb-color: $gray-400) {
+  &::-webkit-scrollbar {
+    width: $width;
+    height: $width;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: $track-color;
+    border-radius: $radius-sm;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: $thumb-color;
+    border-radius: $radius-sm;
+    
+    &:hover {
+      background: darken($thumb-color, 10%);
+    }
+  }
+}
+
+// 컨테이너 믹스인
+@mixin container($max-width: 1200px, $padding: $spacing-md) {
+  max-width: $max-width;
+  margin: 0 auto;
+  padding: 0 $padding;
+}
+
+// 로딩 스피너 믹스인
+@mixin loading-spinner($size: 40px, $color: $primary) {
+  width: $size;
+  height: $size;
+  border: 3px solid rgba($color, 0.3);
+  border-top: 3px solid $color;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+// 빈 상태 믹스인
+@mixin empty-state {
+  text-align: center;
+  padding: $spacing-2xl;
+  color: $text-secondary;
+  
+  .empty-icon {
+    font-size: 4rem;
+    margin-bottom: $spacing-lg;
+    opacity: 0.5;
+  }
+  
+  .empty-title {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-medium;
+    margin-bottom: $spacing-sm;
+  }
+  
+  .empty-description {
+    font-size: $font-size-base;
+    opacity: 0.8;
+  }
+}
