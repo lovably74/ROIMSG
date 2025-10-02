@@ -46,34 +46,100 @@ public class AuthService {
      */
     public AuthResponse loginWithGoogle(String code, UUID tenantId, HttpServletRequest request) {
         try {
-            // Google OAuth 코드로 사용자 정보 조회 (실제 구현에서는 Google API 호출)
-            // 여기서는 샘플 데이터를 사용
-            String googleId = "google_" + System.currentTimeMillis();
-            String email = "user@example.com";
-            String name = "Google 사용자";
-            String profileImageUrl = "https://via.placeholder.com/150";
-
             // 테넌트 ID 설정
             UUID finalTenantId = tenantId != null ? tenantId : UUID.fromString(defaultTenantId);
 
-            // 사용자 조회 또는 생성
-            User user = findOrCreateUser(finalTenantId, googleId, email, name, profileImageUrl);
+            // 1) 코드 교환하여 액세스 토큰 획득
+            String accessTokenFromGoogle = exchangeCodeForAccessToken(code);
 
-            // 로그인 시간 업데이트
+            // 2) 사용자 정보 조회
+            GoogleUser googleUser = fetchGoogleUser(accessTokenFromGoogle);
+
+            // 3) 사용자 조회 또는 생성
+            User user = findOrCreateUser(finalTenantId, googleUser.id, googleUser.email, googleUser.name, googleUser.picture);
+
+            // 4) 로그인 시간 업데이트
             user.setLastLoginAt(LocalDateTime.now());
             userRepository.save(user);
 
-            // JWT 토큰 생성
+            // 5) JWT 토큰 생성
             String accessToken = jwtUtil.generateAccessToken(user.getId(), user.getEmail(), user.getName(), user.getTenantId());
             String refreshToken = jwtUtil.generateRefreshToken(user.getId(), user.getTenantId());
 
-            // 사용자 정보 DTO 생성
+            // 6) 사용자 정보 DTO 생성
             UserInfo userInfo = createUserInfo(user);
 
             return new AuthResponse(accessToken, refreshToken, 86400L, userInfo);
 
         } catch (Exception e) {
             throw new RuntimeException("Google 로그인에 실패했습니다.", e);
+        }
+    }
+
+    private record GoogleUser(String id, String email, String name, String picture) {}
+
+    @Value("${spring.security.oauth2.client.provider.google.token-uri}")
+    private String googleTokenUri;
+
+    @Value("${spring.security.oauth2.client.provider.google.user-info-uri}")
+    private String googleUserInfoUri;
+
+    @Value("${spring.security.oauth2.client.registration.google.client-id}")
+    private String googleClientId;
+
+    @Value("${spring.security.oauth2.client.registration.google.client-secret}")
+    private String googleClientSecret;
+
+    @Value("${spring.security.oauth2.client.registration.google.redirect-uri}")
+    private String googleRedirectUri;
+
+    private String exchangeCodeForAccessToken(String code) {
+        try {
+            java.net.http.HttpClient client = java.net.http.HttpClient.newHttpClient();
+            String form = "code=" + java.net.URLEncoder.encode(code, java.nio.charset.StandardCharsets.UTF_8)
+                    + "&client_id=" + java.net.URLEncoder.encode(googleClientId, java.nio.charset.StandardCharsets.UTF_8)
+                    + "&client_secret=" + java.net.URLEncoder.encode(googleClientSecret, java.nio.charset.StandardCharsets.UTF_8)
+                    + "&redirect_uri=" + java.net.URLEncoder.encode(googleRedirectUri, java.nio.charset.StandardCharsets.UTF_8)
+                    + "&grant_type=authorization_code";
+
+            java.net.http.HttpRequest httpRequest = java.net.http.HttpRequest.newBuilder()
+                    .uri(java.net.URI.create(googleTokenUri))
+                    .header("Content-Type", "application/x-www-form-urlencoded")
+                    .POST(java.net.http.HttpRequest.BodyPublishers.ofString(form))
+                    .build();
+
+            java.net.http.HttpResponse<String> resp = client.send(httpRequest, java.net.http.HttpResponse.BodyHandlers.ofString());
+            if (resp.statusCode() >= 200 && resp.statusCode() < 300) {
+                com.fasterxml.jackson.databind.JsonNode json = new com.fasterxml.jackson.databind.ObjectMapper().readTree(resp.body());
+                return json.get("access_token").asText();
+            }
+            throw new RuntimeException("토큰 교환 실패: status=" + resp.statusCode());
+        } catch (Exception e) {
+            throw new RuntimeException("Google 토큰 교환 실패", e);
+        }
+    }
+
+    private GoogleUser fetchGoogleUser(String googleAccessToken) {
+        try {
+            java.net.http.HttpClient client = java.net.http.HttpClient.newHttpClient();
+            java.net.http.HttpRequest httpRequest = java.net.http.HttpRequest.newBuilder()
+                    .uri(java.net.URI.create(googleUserInfoUri))
+                    .header("Authorization", "Bearer " + googleAccessToken)
+                    .GET()
+                    .build();
+            java.net.http.HttpResponse<String> resp = client.send(httpRequest, java.net.http.HttpResponse.BodyHandlers.ofString());
+            if (resp.statusCode() >= 200 && resp.statusCode() < 300) {
+                com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+                com.fasterxml.jackson.databind.JsonNode json = mapper.readTree(resp.body());
+                String id = json.path("id").asText();
+                String email = json.path("email").asText();
+                String name = json.path("name").asText();
+                String picture = json.path("picture").asText();
+                return new GoogleUser(id, email, name, picture);
+            }
+            throw new RuntimeException("사용자 정보 조회 실패: status=" + resp.statusCode());
+        } catch (Exception e) {
+            throw new RuntimeException("Google 사용자 정보 조회 실패", e);
         }
     }
 
