@@ -1,0 +1,48 @@
+{
+  "name": "roimsg",
+  "version": "1.0.0",
+  "description": "ROIMSG - 멀티테넌시 메시징 시스템",
+  "private": true,
+  "workspaces": [
+    "backend/*",
+    "frontend/*",
+    "shared/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "npm run dev --workspace=backend/api-gateway",
+    "dev:frontend": "npm run dev --workspace=frontend/web-app",
+    "build": "npm run build --workspaces",
+    "test": "npm run test --workspaces",
+    "lint": "npm run lint --workspaces",
+    "clean": "npm run clean --workspaces",
+    "setup": "npm install && npm run setup:db",
+    "setup:db": "node scripts/setup-database.js"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "cross-env": "^7.0.3"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "keywords": [
+    "messaging",
+    "multitenant",
+    "microservices",
+    "vue",
+    "spring-boot",
+    "postgresql"
+  ],
+  "author": "ROIMSG Development Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/roimsg/roimsg.git"
+  },
+  "bugs": {
+    "url": "https://github.com/roimsg/roimsg/issues"
+  },
+  "homepage": "https://github.com/roimsg/roimsg#readme"
+}
