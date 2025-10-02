@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { ref, computed, readonly } from 'vue'
 import { useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
-import type { User, LoginRequest, AuthResponse } from '@/types/auth'
+import type { User, LoginRequest } from '@/types/auth'
 import { authApi } from '@/utils/api'
 
 export const useAuthStore = defineStore('auth', () => {
