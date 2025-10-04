@@ -5,6 +5,9 @@ spring:
   application:
     name: api-gateway
   
+  main:
+    web-application-type: reactive
+  
   cloud:
     gateway:
       routes:
@@ -13,8 +16,8 @@ spring:
           uri: http://localhost:8081
           predicates:
             - Path=/api/auth/**
-          filters:
-            - StripPrefix=2
+          # StripPrefix를 제거하여 /api/auth/** 경로를 그대로 전달
+          filters: []
         
         # 사용자 관리 서비스 라우팅
         - id: user-service
@@ -115,6 +118,7 @@ jwt:
 
 # Rate Limiting 설정
 rate-limit:
+  enabled: false
   window-ms: ${RATE_LIMIT_WINDOW_MS:900000}
   max-requests: ${RATE_LIMIT_MAX_REQUESTS:100}
 

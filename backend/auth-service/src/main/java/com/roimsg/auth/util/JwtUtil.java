@@ -34,6 +34,9 @@ public class JwtUtil {
     @Value("${jwt.refresh-expiration}")
     private long refreshExpiration;
 
+    @Value("${jwt.signup-expiration}")
+    private long signupExpiration;
+
     /**
      * JWT 시크릿 키 생성
      */
@@ -63,6 +66,21 @@ public class JwtUtil {
         claims.put("type", "refresh");
         
         return createToken(claims, userId.toString(), refreshExpiration);
+    }
+
+    /**
+     * Google 회원가입 토큰 생성 (단기 유효)
+     */
+    public String generateSignupToken(UUID tenantId, String googleId, String email, String name, String picture) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("tenantId", tenantId.toString());
+        claims.put("type", "signup");
+        claims.put("googleId", googleId);
+        claims.put("email", email);
+        claims.put("name", name);
+        claims.put("picture", picture);
+        // subject는 googleId로 설정
+        return createToken(claims, googleId, signupExpiration);
     }
 
     /**
@@ -189,6 +207,14 @@ public class JwtUtil {
     public Boolean isRefreshToken(String token) {
         String type = getTokenTypeFromToken(token);
         return "refresh".equals(type);
+    }
+
+    /**
+     * Google 회원가입 토큰인지 확인
+     */
+    public Boolean isSignupToken(String token) {
+        String type = getTokenTypeFromToken(token);
+        return "signup".equals(type);
     }
 
     /**

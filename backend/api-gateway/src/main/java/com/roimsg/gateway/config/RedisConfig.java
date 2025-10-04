@@ -1,9 +1,9 @@
 package com.roimsg.gateway.config;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
-import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
@@ -15,17 +15,13 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
  * @author ROIMSG Development Team
  * @version 1.0.0
  */
+@org.springframework.boot.autoconfigure.condition.ConditionalOnProperty(value = "rate-limit.enabled", havingValue = "true", matchIfMissing = false)
 @Configuration
 public class RedisConfig {
 
-    @Bean
-    public ReactiveRedisConnectionFactory reactiveRedisConnectionFactory() {
-        return new LettuceConnectionFactory();
-    }
-
-    @Bean
+    @Bean(name = "customReactiveRedisTemplate")
     public ReactiveRedisTemplate<String, String> reactiveRedisTemplate(
-            ReactiveRedisConnectionFactory connectionFactory) {
+            @Qualifier("reactiveRedisConnectionFactory") ReactiveRedisConnectionFactory connectionFactory) {
         
         StringRedisSerializer serializer = new StringRedisSerializer();
         

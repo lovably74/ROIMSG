@@ -23,9 +23,17 @@ onMounted(async () => {
     return
   }
   try {
-    await auth.loginWithGoogle(code)
-    toast.success('로그인되었습니다.')
-    router.push('/dashboard')
+    const res = await auth.loginWithGoogle(code)
+    if (res?.authenticated) {
+      toast.success('로그인되었습니다.')
+      router.push('/dashboard')
+    } else if (res?.needSignup) {
+      // 회원가입 페이지로 이동
+      router.push('/auth/register-google')
+    } else {
+      toast.error('로그인 처리 중 알 수 없는 상태입니다.')
+      router.push('/auth/login')
+    }
   } catch (e: any) {
     toast.error(e?.message || '로그인에 실패했습니다.')
     router.push('/auth/login')

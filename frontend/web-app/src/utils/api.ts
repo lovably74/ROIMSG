@@ -1,7 +1,7 @@
 import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosResponse } from 'axios'
 import { useAuthStore } from '@/stores/auth'
 import { useToast } from 'vue-toastification'
-import type { LoginRequest, AuthResponse, RefreshTokenRequest, User } from '@/types/auth'
+import type { LoginRequest, AuthResponse, RefreshTokenRequest, User, GoogleLoginResponse } from '@/types/auth'
 
 // API 기본 설정
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'
@@ -83,15 +83,42 @@ export const authApi = {
   // 로그인
   login: async (credentials: LoginRequest): Promise<AuthResponse> => {
     const response = await api.post('/api/auth/login', credentials)
-    return response.data
+    const d = response.data
+    return {
+      accessToken: d.access_token,
+      refreshToken: d.refresh_token,
+      tokenType: d.token_type,
+      expiresIn: d.expires_in,
+      user: d.user
+    }
   },
 
-  // Google OAuth 로그인
-  loginWithGoogle: async (code: string): Promise<AuthResponse> => {
+  // Google OAuth 로그인 (회원 존재 시 토큰, 미존재 시 사전가입 정보 반환)
+  loginWithGoogle: async (code: string): Promise<GoogleLoginResponse> => {
     const response = await api.post('/api/auth/login/google', null, {
       params: { code }
     })
-    return response.data
+    const d = response.data
+    if (d.authenticated) {
+      const a = d.auth
+      return {
+        authenticated: true,
+        needSignup: false,
+        auth: {
+          accessToken: a.access_token,
+          refreshToken: a.refresh_token,
+          tokenType: a.token_type,
+          expiresIn: a.expires_in,
+          user: a.user
+        }
+      }
+    }
+    return {
+      authenticated: false,
+      needSignup: true,
+      signupToken: d.signupToken,
+      profile: d.profile
+    }
   },
 
   // 토큰 갱신
@@ -99,7 +126,14 @@ export const authApi = {
     const response = await api.post('/api/auth/refresh', {
       refreshToken
     })
-    return response.data
+    const d = response.data
+    return {
+      accessToken: d.access_token,
+      refreshToken: d.refresh_token,
+      tokenType: d.token_type,
+      expiresIn: d.expires_in,
+      user: d.user
+    }
   },
 
   // 로그아웃
@@ -132,6 +166,19 @@ export const authApi = {
       return response.data
     } catch (error) {
       return false
+    }
+  },
+
+  // Google 회원가입
+  signupWithGoogle: async (payload: { signupToken: string; agreePrivacy: boolean; agreeTerms?: boolean; name?: string }): Promise<AuthResponse> => {
+    const response = await api.post('/api/auth/signup/google', payload)
+    const d = response.data
+    return {
+      accessToken: d.access_token,
+      refreshToken: d.refresh_token,
+      tokenType: d.token_type,
+      expiresIn: d.expires_in,
+      user: d.user
     }
   }
 }

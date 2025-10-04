@@ -32,6 +32,20 @@ export interface AuthResponse {
   user: User
 }
 
+export interface GoogleProfile {
+  email: string
+  name: string
+  picture?: string
+}
+
+export interface GoogleLoginResponse {
+  authenticated: boolean
+  needSignup?: boolean
+  auth?: AuthResponse
+  signupToken?: string
+  profile?: GoogleProfile
+}
+
 export interface RefreshTokenRequest {
   refreshToken: string
 }

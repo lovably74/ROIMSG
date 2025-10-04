@@ -12,6 +12,7 @@
   - [ ] Maven/Gradle 설치
   - [ ] Git 설정
   - [ ] IntelliJ IDEA / VS Code 설치
+  - [x] 시스템 환경 점검 스크립트 (scripts/check-environment.ps1)
 
 - [ ] **Google OAuth 설정**
   - [ ] Google Developers Console 프로젝트 생성
@@ -27,12 +28,12 @@
   - [ ] 프로젝트 구조 문서화
 
 - [ ] **디렉토리 구조 생성**
-  - [ ] backend/ (백엔드 서비스들)
-  - [ ] frontend/ (프론트엔드 애플리케이션들)
-  - [ ] shared/ (공통 라이브러리)
-  - [ ] docs/ (문서)
-  - [ ] scripts/ (유틸리티 스크립트)
-  - [ ] infrastructure/ (인프라 설정)
+  - [x] backend/ (백엔드 서비스들)
+  - [x] frontend/ (프론트엔드 애플리케이션들)
+  - [x] shared/ (공통 라이브러리)
+  - [x] docs/ (문서)
+  - [x] scripts/ (유틸리티 스크립트)
+  - [x] infrastructure/ (인프라 설정)
 
 ## 🏗️ 백엔드 개발
 
@@ -262,25 +263,24 @@
 
 ## 🚀 배포 및 운영
 
-### 로컬 개발 환경
-- [ ] **개발 환경 구성**
-  - [ ] Docker Compose 설정
-  - [ ] 로컬 DB 설정
-  - [ ] 개발용 설정 파일
+### 개발 환경
+- [ ] **로컬 서비스 구성**
+  - [ ] PostgreSQL/Redis 로컬 설치 또는 공용 인스턴스 연결 가이드
+  - [ ] .env 개발 프로파일 정리 및 배포 문서화
+  - [ ] scripts/setup-database.js 실행 검증
 
-### 테스트 환경
-- [ ] **테스트 서버 설정**
-  - [ ] Docker 컨테이너 설정
-  - [ ] CI/CD 파이프라인
-  - [ ] 자동화된 테스트
+### 테스트 서버
+- [ ] **Docker Compose 기반 테스트 인프라**
+  - [ ] `infrastructure/test/docker-compose.yml` 검증
+  - [ ] 테스트 배포 파이프라인 연동 (CI)
+  - [ ] 데이터 초기화 및 백업 정책 수립
 
-### 운영 환경
-- [ ] **클라우드 배포**
-  - [ ] Kubernetes 설정
-  - [ ] 로드 밸런서 설정
-  - [ ] 모니터링 설정
-  - [ ] 백업 전략
-
+### 운영 서버
+- [ ] **운영 아키텍처 정의**
+  - [ ] Kubernetes/매니지드 서비스 설계 문서화
+  - [ ] `infrastructure/prod/` IaC 매니페스트 작성
+  - [ ] 모니터링·보안 정책 확정
+  - [ ] 운영 배포 가이드 작성
 ## 📚 문서화
 
 ### 기술 문서
@@ -535,3 +535,5 @@
 
 **총 예상 기간**: 12-19주  
 **업데이트일**: 2025-10-02
+
+

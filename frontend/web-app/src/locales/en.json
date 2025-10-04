@@ -70,8 +70,8 @@
     "readAt": "Read At",
     "unread": "Unread",
     "noMessages": "No messages.",
-    "messageSent": "Message sent successfully.",
-    "messageDeleted": "Message deleted successfully.",
+    "messageSent": "Message sent.",
+    "messageDeleted": "Message deleted.",
     "typeMessage": "Type a message...",
     "attachFile": "Attach File",
     "emoji": "Emoji"
@@ -88,13 +88,13 @@
     "comments": "Comments",
     "likes": "Likes",
     "noPosts": "No posts.",
-    "postCreated": "Post created successfully.",
-    "postUpdated": "Post updated successfully.",
-    "postDeleted": "Post deleted successfully.",
+    "postCreated": "Post created.",
+    "postUpdated": "Post updated.",
+    "postDeleted": "Post deleted.",
     "writeComment": "Write Comment",
     "commentContent": "Comment Content",
-    "commentCreated": "Comment created successfully.",
-    "commentDeleted": "Comment deleted successfully.",
+    "commentCreated": "Comment created.",
+    "commentDeleted": "Comment deleted.",
     "likePost": "Like Post",
     "unlikePost": "Unlike Post"
   },
@@ -108,10 +108,10 @@
     "download": "Download",
     "preview": "Preview",
     "noFiles": "No files.",
-    "fileUploaded": "File uploaded successfully.",
-    "fileDeleted": "File deleted successfully.",
+    "fileUploaded": "File uploaded.",
+    "fileDeleted": "File deleted.",
     "uploadProgress": "Upload Progress: {progress}%",
-    "dragAndDrop": "Drag and drop files here or click to select",
+    "dragAndDrop": "Drag files here or click to select",
     "supportedFormats": "Supported formats: {formats}",
     "maxFileSize": "Max file size: {size}"
   },
@@ -124,8 +124,8 @@
     "lastLogin": "Last Login",
     "createdAt": "Created At",
     "noUsers": "No users.",
-    "userUpdated": "User updated successfully.",
-    "userDeleted": "User deleted successfully.",
+    "userUpdated": "User updated.",
+    "userDeleted": "User deleted.",
     "active": "Active",
     "inactive": "Inactive",
     "admin": "Admin",
@@ -142,8 +142,8 @@
     "currentPassword": "Current Password",
     "newPassword": "New Password",
     "confirmPassword": "Confirm Password",
-    "profileUpdated": "Profile updated successfully.",
-    "passwordChanged": "Password changed successfully.",
+    "profileUpdated": "Profile updated.",
+    "passwordChanged": "Password changed.",
     "uploadImage": "Upload Image",
     "removeImage": "Remove Image"
   },
@@ -160,7 +160,7 @@
     "auto": "Auto",
     "emailNotifications": "Email Notifications",
     "pushNotifications": "Push Notifications",
-    "settingsSaved": "Settings saved successfully.",
+    "settingsSaved": "Settings saved.",
     "twoFactorAuth": "Two-Factor Authentication",
     "enableTwoFactor": "Enable Two-Factor Authentication",
     "disableTwoFactor": "Disable Two-Factor Authentication"
@@ -168,7 +168,7 @@
   "errors": {
     "networkError": "Network error occurred.",
     "serverError": "Server error occurred.",
-    "notFound": "Page not found.",
+    "notFound": "Requested page not found.",
     "unauthorized": "Authentication required.",
     "forbidden": "Access denied.",
     "validationError": "Please check your input.",
@@ -180,9 +180,9 @@
   "validation": {
     "required": "This field is required.",
     "email": "Please enter a valid email address.",
-    "minLength": "Please enter at least {min} characters.",
+    "minLength": "Minimum {min} characters required.",
     "maxLength": "Maximum {max} characters allowed.",
     "passwordMismatch": "Passwords do not match.",
-    "invalidFormat": "Please enter in the correct format."
+    "invalidFormat": "Please enter in valid format."
   }
 }

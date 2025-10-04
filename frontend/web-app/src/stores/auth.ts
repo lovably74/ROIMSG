@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed, readonly } from 'vue'
 import { useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
-import type { User, LoginRequest } from '@/types/auth'
+import type { User, LoginRequest, AuthResponse } from '@/types/auth'
 import { authApi } from '@/utils/api'
 
 export const useAuthStore = defineStore('auth', () => {
@@ -15,6 +15,12 @@ export const useAuthStore = defineStore('auth', () => {
   const refreshToken = ref<string | null>(localStorage.getItem('refresh_token'))
   const isLoading = ref(false)
 
+  // Google 사전가입 상태
+  const pendingGoogleSignup = ref<{
+    signupToken: string
+    profile: { email: string; name: string; picture?: string }
+  } | null>(null)
+
   // 계산된 속성
   const isAuthenticated = computed(() => !!user.value && !!accessToken.value)
   const hasToken = computed(() => !!accessToken.value)
@@ -24,17 +30,7 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       isLoading.value = true
       const response = await authApi.login(credentials)
-      
-      // 토큰 저장
-      accessToken.value = response.accessToken
-      refreshToken.value = response.refreshToken
-      user.value = response.user
-
-      // 로컬 스토리지에 저장
-      localStorage.setItem('access_token', response.accessToken)
-      localStorage.setItem('refresh_token', response.refreshToken)
-      localStorage.setItem('user', JSON.stringify(response.user))
-
+      applyAuthResponse(response)
       toast.success('로그인에 성공했습니다.')
       return response
     } catch (error: any) {
@@ -48,20 +44,31 @@ export const useAuthStore = defineStore('auth', () => {
   const loginWithGoogle = async (code: string) => {
     try {
       isLoading.value = true
-      const response = await authApi.loginWithGoogle(code)
-      
-      // 토큰 저장
-      accessToken.value = response.accessToken
-      refreshToken.value = response.refreshToken
-      user.value = response.user
+      const result = await authApi.loginWithGoogle(code)
 
-      // 로컬 스토리지에 저장
-      localStorage.setItem('access_token', response.accessToken)
-      localStorage.setItem('refresh_token', response.refreshToken)
-      localStorage.setItem('user', JSON.stringify(response.user))
+      if (result.authenticated && result.auth) {
+        const { auth } = result
+        // 토큰 저장
+        accessToken.value = auth.accessToken
+        refreshToken.value = auth.refreshToken
+        user.value = auth.user
+        // 로컬 스토리지에 저장
+        localStorage.setItem('access_token', auth.accessToken)
+        localStorage.setItem('refresh_token', auth.refreshToken)
+        localStorage.setItem('user', JSON.stringify(auth.user))
+        toast.success('Google 로그인에 성공했습니다.')
+        return { authenticated: true }
+      }
 
-      toast.success('Google 로그인에 성공했습니다.')
-      return response
+      if (result.needSignup && result.signupToken && result.profile) {
+        pendingGoogleSignup.value = {
+          signupToken: result.signupToken,
+          profile: result.profile
+        }
+        return { authenticated: false, needSignup: true }
+      }
+
+      throw new Error('알 수 없는 로그인 응답입니다.')
     } catch (error: any) {
       toast.error(error.message || 'Google 로그인에 실패했습니다.')
       throw error
@@ -91,17 +98,7 @@ export const useAuthStore = defineStore('auth', () => {
       }
 
       const response = await authApi.refreshToken(refreshToken.value)
-      
-      // 새로운 토큰 저장
-      accessToken.value = response.accessToken
-      refreshToken.value = response.refreshToken
-      user.value = response.user
-
-      // 로컬 스토리지 업데이트
-      localStorage.setItem('access_token', response.accessToken)
-      localStorage.setItem('refresh_token', response.refreshToken)
-      localStorage.setItem('user', JSON.stringify(response.user))
-
+      applyAuthResponse(response)
       return response
     } catch (error) {
       // 리프레시 실패 시 로그아웃
@@ -146,12 +143,22 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.setItem('user', JSON.stringify(updatedUser))
   }
 
+  const applyAuthResponse = (response: AuthResponse) => {
+    accessToken.value = response.accessToken
+    refreshToken.value = response.refreshToken
+    user.value = response.user
+    localStorage.setItem('access_token', response.accessToken)
+    localStorage.setItem('refresh_token', response.refreshToken)
+    localStorage.setItem('user', JSON.stringify(response.user))
+  }
+
   return {
     // 상태
     user: readonly(user),
     accessToken: readonly(accessToken),
     refreshToken: readonly(refreshToken),
     isLoading: readonly(isLoading),
+    pendingGoogleSignup,
     
     // 계산된 속성
     isAuthenticated,
@@ -164,6 +171,7 @@ export const useAuthStore = defineStore('auth', () => {
     refreshAccessToken,
     initializeAuth,
     clearAuth,
-    updateUser
+    updateUser,
+    applyAuthResponse
   }
 })

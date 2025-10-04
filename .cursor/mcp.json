@@ -1,0 +1,23 @@
+{
+  "mcpServers": {
+    "Context7": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@upstash/context7-mcp@latest"
+      ],
+      "env": {},
+      "working_directory": "d:\\project\\ROIMSG"
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "d:\\project\\ROIMSG"
+      ],
+      "env": {},
+      "working_directory": "d:\\project\\ROIMSG"
+    }
+  }
+}

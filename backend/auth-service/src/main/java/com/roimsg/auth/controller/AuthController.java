@@ -36,17 +36,34 @@ public class AuthController {
     private JwtUtil jwtUtil;
 
     /**
-     * Google OAuth 로그인
+     * Google OAuth 로그인 (존재 시 바로 로그인, 미존재 시 회원가입 필요 응답)
      */
     @PostMapping("/login/google")
-    @Operation(summary = "Google OAuth 로그인", description = "Google 계정으로 로그인합니다.")
-    public ResponseEntity<AuthResponse> loginWithGoogle(
+    @Operation(summary = "Google OAuth 로그인", description = "Google 계정으로 로그인 또는 회원가입 필요 정보를 반환합니다.")
+    public ResponseEntity<?> loginWithGoogle(
             @Parameter(description = "Google OAuth 코드") @RequestParam String code,
             @Parameter(description = "테넌트 ID") @RequestHeader(value = "X-Tenant-Id", required = false) UUID tenantId,
             HttpServletRequest request) {
-        
         try {
-            AuthResponse response = authService.loginWithGoogle(code, tenantId, request);
+            Object result = authService.loginWithGoogle(code, tenantId, request);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    /**
+     * Google 회원가입
+     */
+    @PostMapping("/signup/google")
+    @Operation(summary = "Google 회원가입", description = "사전가입 토큰과 동의 정보를 검증하여 회원을 생성합니다.")
+    public ResponseEntity<AuthResponse> signupWithGoogle(
+            @Valid @RequestBody com.roimsg.auth.dto.GoogleSignupRequest signupRequest) {
+        try {
+            if (!signupRequest.isAgreePrivacy()) {
+                return ResponseEntity.badRequest().build();
+            }
+            AuthResponse response = authService.signupWithGoogle(signupRequest.getSignupToken(), signupRequest.getName());
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();

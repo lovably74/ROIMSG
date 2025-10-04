@@ -1,0 +1,30 @@
+{
+  "name": "@roimsg/shared",
+  "version": "0.1.0",
+  "description": "Shared domain types and utilities for the ROIMSG platform",
+  "private": false,
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "clean": "rimraf dist",
+    "lint": "tsc -p tsconfig.json --noEmit",
+    "test": "node -e \"console.log('No shared tests defined yet');\""
+  },
+  "keywords": [
+    "shared",
+    "types",
+    "utilities",
+    "roimsg"
+  ],
+  "author": "ROIMSG Development Team",
+  "license": "MIT",
+  "devDependencies": {
+    "rimraf": "^5.0.5",
+    "typescript": "^5.4.5"
+  }
+}

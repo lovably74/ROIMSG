@@ -1,44 +1,51 @@
-// ROIMSG SCSS 변수
-// Ocean Blue 컬러 시스템 + Neumorphism 디자인
+// ROIMSG SCSS 변수 정의
+// Ocean Blue + Neumorphism 디자인 시스템
 
-// 컬러 팔레트
-$primary: #0ea5e9;
-$primary-dark: #0284c7;
-$primary-light: #38bdf8;
-$secondary: #0284c7;
-$accent: #38bdf8;
+// 브레이크포인트
+$breakpoint-xs: 0;
+$breakpoint-sm: 600px;
+$breakpoint-md: 960px;
+$breakpoint-lg: 1280px;
+$breakpoint-xl: 1920px;
+
+// 컬러 팔레트 - Ocean Blue
+$color-primary: #0ea5e9;
+$color-primary-dark: #0284c7;
+$color-primary-light: #38bdf8;
+$color-secondary: #0284c7;
+$color-accent: #38bdf8;
 
 // 상태 컬러
-$success: #10b981;
-$warning: #f59e0b;
-$error: #ef4444;
-$info: #3b82f6;
+$color-success: #10b981;
+$color-warning: #f59e0b;
+$color-error: #ef4444;
+$color-info: #3b82f6;
 
 // 그레이 스케일
-$gray-50: #f8fafc;
-$gray-100: #f1f5f9;
-$gray-200: #e2e8f0;
-$gray-300: #cbd5e1;
-$gray-400: #94a3b8;
-$gray-500: #64748b;
-$gray-600: #475569;
-$gray-700: #334155;
-$gray-800: #1e293b;
-$gray-900: #0f172a;
+$color-gray-50: #f8fafc;
+$color-gray-100: #f1f5f9;
+$color-gray-200: #e2e8f0;
+$color-gray-300: #cbd5e1;
+$color-gray-400: #94a3b8;
+$color-gray-500: #64748b;
+$color-gray-600: #475569;
+$color-gray-700: #334155;
+$color-gray-800: #1e293b;
+$color-gray-900: #0f172a;
 
 // 텍스트 컬러
-$text-primary: $gray-900;
-$text-secondary: $gray-600;
-$text-disabled: $gray-400;
+$color-text-primary: $color-gray-900;
+$color-text-secondary: $color-gray-600;
+$color-text-disabled: $color-gray-400;
 
 // 배경 컬러
-$background: $gray-50;
-$surface: #ffffff;
-$surface-variant: $gray-100;
+$color-background: $color-gray-50;
+$color-surface: #ffffff;
+$color-surface-variant: $color-gray-100;
 
 // 보더 컬러
-$border: $gray-200;
-$border-light: $gray-100;
+$color-border: $color-gray-200;
+$color-border-light: $color-gray-100;
 
 // 그림자
 $shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -49,6 +56,8 @@ $shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 
 // Neumorphism 그림자
 $shadow-neumorphism: 8px 8px 16px #d1d9e6, -8px -8px 16px #f9f9f9;
 $shadow-neumorphism-inset: inset 4px 4px 8px #d1d9e6;
+$shadow-neumorphism-dark: 8px 8px 16px #0a0a0a, -8px -8px 16px #2a2a2a;
+$shadow-neumorphism-dark-inset: inset 4px 4px 8px #0a0a0a;
 
 // 트랜지션
 $transition-fast: 0.15s ease-in-out;
@@ -81,26 +90,19 @@ $font-size-4xl: 2.25rem;
 
 // 폰트 패밀리
 $font-family-primary: 'Roboto', 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-$font-family-mono: 'Fira Code', 'Monaco', 'Consolas', monospace;
+$font-family-mono: 'Roboto Mono', 'Consolas', monospace;
 
-// 폰트 웨이트
+// 폰트 두께
 $font-weight-light: 300;
 $font-weight-normal: 400;
 $font-weight-medium: 500;
 $font-weight-semibold: 600;
 $font-weight-bold: 700;
 
-// 라인 하이트
+// 행간
 $line-height-tight: 1.25;
-$line-height-normal: 1.5;
-$line-height-relaxed: 1.75;
-
-// 브레이크포인트
-$breakpoint-xs: 0;
-$breakpoint-sm: 600px;
-$breakpoint-md: 960px;
-$breakpoint-lg: 1280px;
-$breakpoint-xl: 1920px;
+$line-height-normal: 1.4;
+$line-height-relaxed: 1.5;
 
 // Z-인덱스
 $z-dropdown: 1000;
@@ -110,4 +112,93 @@ $z-modal-backdrop: 1040;
 $z-modal: 1050;
 $z-popover: 1060;
 $z-tooltip: 1070;
-$z-toast: 1080;
+
+// 애니메이션
+$animation-duration-fast: 0.15s;
+$animation-duration-normal: 0.3s;
+$animation-duration-slow: 0.6s;
+$animation-timing-function: ease-in-out;
+
+// 그리드
+$grid-columns: 12;
+$grid-gutter-width: 1.5rem;
+
+// 컨테이너
+$container-max-width: 1200px;
+$container-padding-x: 1rem;
+
+// 컴포넌트 크기
+$button-height-sm: 2rem;
+$button-height-md: 2.5rem;
+$button-height-lg: 3rem;
+
+$input-height-sm: 2rem;
+$input-height-md: 2.5rem;
+$input-height-lg: 3rem;
+
+// 테이블
+$table-cell-padding-y: 0.75rem;
+$table-cell-padding-x: 0.75rem;
+$table-cell-padding-y-sm: 0.5rem;
+$table-cell-padding-x-sm: 0.5rem;
+
+// 카드
+$card-border-width: 1px;
+$card-border-radius: $radius-lg;
+$card-inner-border-radius: calc(#{$card-border-radius} - #{$card-border-width});
+
+// 모달
+$modal-backdrop-bg: rgba(0, 0, 0, 0.5);
+$modal-header-border-color: $color-border;
+$modal-footer-border-color: $color-border;
+
+// 드롭다운
+$dropdown-min-width: 10rem;
+$dropdown-padding-y: 0.5rem;
+$dropdown-spacer: 0.125rem;
+
+// 툴팁
+$tooltip-bg: $color-gray-900;
+$tooltip-color: $color-gray-50;
+$tooltip-font-size: $font-size-sm;
+$tooltip-max-width: 200px;
+
+// 알림
+$alert-padding-y: 0.75rem;
+$alert-padding-x: 1.25rem;
+$alert-border-radius: $radius-md;
+
+// 프로그레스
+$progress-height: 1rem;
+$progress-font-size: $font-size-sm;
+$progress-bg: $color-gray-200;
+
+// 뱃지
+$badge-font-size: $font-size-xs;
+$badge-font-weight: $font-weight-medium;
+$badge-color: $color-gray-50;
+$badge-padding-y: 0.25rem;
+$badge-padding-x: 0.5rem;
+$badge-border-radius: $radius-sm;
+
+// 아바타
+$avatar-size-sm: 2rem;
+$avatar-size-md: 2.5rem;
+$avatar-size-lg: 3rem;
+$avatar-size-xl: 4rem;
+
+// 네비게이션
+$nav-link-padding-y: 0.5rem;
+$nav-link-padding-x: 1rem;
+$nav-link-color: $color-text-secondary;
+$nav-link-hover-color: $color-primary;
+
+// 사이드바
+$sidebar-width: 280px;
+$sidebar-width-collapsed: 64px;
+
+// 헤더
+$header-height: 64px;
+
+// 푸터
+$footer-height: 60px;

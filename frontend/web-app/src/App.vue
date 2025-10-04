@@ -61,23 +61,14 @@
             <v-list-item-subtitle>{{ user?.email }}</v-list-item-subtitle>
           </v-list-item>
           <v-divider />
-          <v-list-item @click="goToProfile">
-            <v-list-item-icon>
-              <v-icon>mdi-account</v-icon>
-            </v-list-item-icon>
+          <v-list-item @click="goToProfile" prepend-icon="mdi-account">
             <v-list-item-title>프로필</v-list-item-title>
           </v-list-item>
-          <v-list-item @click="goToSettings">
-            <v-list-item-icon>
-              <v-icon>mdi-cog</v-icon>
-            </v-list-item-icon>
+          <v-list-item @click="goToSettings" prepend-icon="mdi-cog">
             <v-list-item-title>설정</v-list-item-title>
           </v-list-item>
           <v-divider />
-          <v-list-item @click="logout">
-            <v-list-item-icon>
-              <v-icon>mdi-logout</v-icon>
-            </v-list-item-icon>
+          <v-list-item @click="logout" prepend-icon="mdi-logout">
             <v-list-item-title>로그아웃</v-list-item-title>
           </v-list-item>
         </v-list>
@@ -110,8 +101,8 @@
       v-if="!isAuthPage"
       v-model="drawer"
       app
-      :permanent="$vuetify.display.mdAndUp"
-      :temporary="$vuetify.display.smAndDown"
+      :permanent="mdAndUp"
+      :temporary="smAndDown"
       width="280"
     >
       <v-list nav>
@@ -188,7 +179,7 @@ import { useDisplay } from 'vuetify'
 const route = useRoute()
 const router = useRouter()
 const { locale } = useI18n()
-const { mdAndUp } = useDisplay()
+const { mdAndUp, smAndDown } = useDisplay()
 const authStore = useAuthStore()
 
 // 반응형 데이터

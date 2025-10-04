@@ -23,7 +23,6 @@
     "dayjs": "^1.11.10",
     "lodash-es": "^4.17.21",
     "pinia": "^2.1.7",
-    "roimsg": "file:../..",
     "socket.io-client": "^4.7.4",
     "vue": "^3.3.8",
     "vue-draggable-plus": "^0.3.5",

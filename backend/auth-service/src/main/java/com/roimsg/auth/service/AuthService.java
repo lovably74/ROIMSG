@@ -42,9 +42,9 @@ public class AuthService {
     private String defaultTenantId;
 
     /**
-     * Google OAuth 로그인
+     * Google OAuth 로그인 (존재하지 않으면 사전가입 토큰 반환)
      */
-    public AuthResponse loginWithGoogle(String code, UUID tenantId, HttpServletRequest request) {
+    public Object loginWithGoogle(String code, UUID tenantId, HttpServletRequest request) {
         try {
             // 테넌트 ID 설정
             UUID finalTenantId = tenantId != null ? tenantId : UUID.fromString(defaultTenantId);
@@ -55,25 +55,81 @@ public class AuthService {
             // 2) 사용자 정보 조회
             GoogleUser googleUser = fetchGoogleUser(accessTokenFromGoogle);
 
-            // 3) 사용자 조회 또는 생성
-            User user = findOrCreateUser(finalTenantId, googleUser.id, googleUser.email, googleUser.name, googleUser.picture);
+            // 3) 사용자 조회
+            Optional<User> existingUser = userRepository.findByTenantIdAndGoogleId(finalTenantId, googleUser.id);
+            if (existingUser.isPresent()) {
+                User user = existingUser.get();
+                // 로그인 시간 업데이트
+                user.setLastLoginAt(LocalDateTime.now());
+                userRepository.save(user);
 
-            // 4) 로그인 시간 업데이트
-            user.setLastLoginAt(LocalDateTime.now());
-            userRepository.save(user);
+                // JWT 토큰 생성
+                String accessToken = jwtUtil.generateAccessToken(user.getId(), user.getEmail(), user.getName(), user.getTenantId());
+                String refreshToken = jwtUtil.generateRefreshToken(user.getId(), user.getTenantId());
 
-            // 5) JWT 토큰 생성
-            String accessToken = jwtUtil.generateAccessToken(user.getId(), user.getEmail(), user.getName(), user.getTenantId());
-            String refreshToken = jwtUtil.generateRefreshToken(user.getId(), user.getTenantId());
+                // 사용자 정보 DTO 생성
+                UserInfo userInfo = createUserInfo(user);
 
-            // 6) 사용자 정보 DTO 생성
-            UserInfo userInfo = createUserInfo(user);
+                return com.roimsg.auth.dto.GooglePreSignupResponse.authenticated(
+                        new com.roimsg.auth.dto.AuthResponse(accessToken, refreshToken, 86400L, userInfo)
+                );
+            }
 
-            return new AuthResponse(accessToken, refreshToken, 86400L, userInfo);
+            // 4) 회원가입 필요: 사전가입 토큰 생성 (단기 유효)
+            String signupToken = jwtUtil.generateSignupToken(finalTenantId, googleUser.id, googleUser.email, googleUser.name, googleUser.picture);
+            com.roimsg.auth.dto.GoogleProfile profile = new com.roimsg.auth.dto.GoogleProfile(googleUser.email, googleUser.name, googleUser.picture);
+            return com.roimsg.auth.dto.GooglePreSignupResponse.needSignup(signupToken, profile);
 
         } catch (Exception e) {
             throw new RuntimeException("Google 로그인에 실패했습니다.", e);
         }
+    }
+
+    /**
+     * Google 회원가입 처리
+     */
+    public AuthResponse signupWithGoogle(String signupToken, String overrideName) {
+        try {
+            if (!jwtUtil.validateToken(signupToken) || !jwtUtil.isSignupToken(signupToken)) {
+                throw new RuntimeException("유효하지 않은 회원가입 토큰입니다.");
+            }
+            // 토큰에서 정보 추출
+            UUID tenantId = jwtUtil.getTenantIdFromToken(signupToken);
+            String googleId = getClaim(signupToken, "googleId");
+            String email = getClaim(signupToken, "email");
+            String name = overrideName != null && !overrideName.isBlank() ? overrideName : getClaim(signupToken, "name");
+            String picture = getClaim(signupToken, "picture");
+
+            // 기존 존재 여부 재확인
+            Optional<User> existing = userRepository.findByTenantIdAndGoogleId(tenantId, googleId);
+            if (existing.isPresent()) {
+                // 이미 존재하면 로그인처럼 토큰 발급
+                User user = existing.get();
+                String accessToken = jwtUtil.generateAccessToken(user.getId(), user.getEmail(), user.getName(), user.getTenantId());
+                String refreshToken = jwtUtil.generateRefreshToken(user.getId(), user.getTenantId());
+                UserInfo userInfo = createUserInfo(user);
+                return new AuthResponse(accessToken, refreshToken, 86400L, userInfo);
+            }
+
+            // 새 사용자 생성
+            User user = new User(tenantId, googleId, email, name);
+            user.setProfileImageUrl(picture);
+            user.setIsActive(true);
+            user.setLastLoginAt(LocalDateTime.now());
+            userRepository.save(user);
+
+            // 토큰 발급
+            String accessToken = jwtUtil.generateAccessToken(user.getId(), user.getEmail(), user.getName(), user.getTenantId());
+            String refreshToken = jwtUtil.generateRefreshToken(user.getId(), user.getTenantId());
+            UserInfo userInfo = createUserInfo(user);
+            return new AuthResponse(accessToken, refreshToken, 86400L, userInfo);
+        } catch (Exception e) {
+            throw new RuntimeException("Google 회원가입에 실패했습니다.", e);
+        }
+    }
+
+    private String getClaim(String token, String key) {
+        return jwtUtil.getClaimFromToken(token, claims -> claims.get(key, String.class));
     }
 
     private record GoogleUser(String id, String email, String name, String picture) {}

@@ -43,6 +43,32 @@ async function testConnection() {
 }
 
 /**
+ * DB가 없으면 postgres 기본 DB에 접속해서 생성
+ */
+async function ensureDatabaseExists() {
+  const baseConfig = { ...dbConfig };
+  const targetDb = baseConfig.database;
+  baseConfig.database = 'postgres';
+  const client = new Client(baseConfig);
+  try {
+    await client.connect();
+    console.log(`🔧 데이터베이스 존재 여부 확인: ${targetDb}`);
+    const res = await client.query('SELECT 1 FROM pg_database WHERE datname = $1', [targetDb]);
+    if (res.rowCount === 0) {
+      await client.query(`CREATE DATABASE "${targetDb}"`);
+      console.log(`✅ 데이터베이스 생성: ${targetDb}`);
+    } else {
+      console.log('✅ 데이터베이스가 이미 존재합니다.');
+    }
+  } catch (e) {
+    console.error('❌ 데이터베이스 생성 확인 중 오류:', e.message);
+    throw e;
+  } finally {
+    await client.end();
+  }
+}
+
+/**
  * SQL 파일 실행
  */
 async function executeSqlFile(client, filePath) {
@@ -123,13 +149,19 @@ async function main() {
   console.log('=====================================');
   
   // 데이터베이스 연결 테스트
-  const isConnected = await testConnection();
+  let isConnected = await testConnection();
   if (!isConnected) {
-    console.log('\n💡 해결 방법:');
-    console.log('1. PostgreSQL이 실행 중인지 확인하세요');
-    console.log('2. 데이터베이스 설정을 확인하세요');
-    console.log('3. 환경 변수를 설정하세요');
-    process.exit(1);
+    // DB가 없으면 생성 시도
+    await ensureDatabaseExists();
+    // 재시도
+    isConnected = await testConnection();
+    if (!isConnected) {
+      console.log('\n💡 해결 방법:');
+      console.log('1. PostgreSQL이 실행 중인지 확인하세요');
+      console.log('2. 데이터베이스 설정을 확인하세요');
+      console.log('3. 환경 변수를 설정하세요');
+      process.exit(1);
+    }
   }
   
   // 데이터베이스 초기화

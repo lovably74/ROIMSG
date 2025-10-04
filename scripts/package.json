@@ -1,0 +1,10 @@
+{
+  "name": "roimsg-scripts",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Utility scripts for ROIMSG (isolated deps)",
+  "license": "MIT",
+  "dependencies": {
+    "pg": "^8.12.0"
+  }
+}

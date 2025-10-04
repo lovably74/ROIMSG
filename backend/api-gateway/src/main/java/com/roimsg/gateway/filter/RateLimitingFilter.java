@@ -1,5 +1,6 @@
 package com.roimsg.gateway.filter;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
@@ -20,6 +21,7 @@ import java.time.Instant;
  * @author ROIMSG Development Team
  * @version 1.0.0
  */
+@org.springframework.boot.autoconfigure.condition.ConditionalOnProperty(value = "rate-limit.enabled", havingValue = "true", matchIfMissing = false)
 @Component
 public class RateLimitingFilter extends AbstractGatewayFilterFactory<RateLimitingFilter.Config> {
 
@@ -31,7 +33,7 @@ public class RateLimitingFilter extends AbstractGatewayFilterFactory<RateLimitin
     @Value("${rate-limit.max-requests:100}")
     private int maxRequests;
 
-    public RateLimitingFilter(ReactiveRedisTemplate<String, String> redisTemplate) {
+    public RateLimitingFilter(@Qualifier("customReactiveRedisTemplate") ReactiveRedisTemplate<String, String> redisTemplate) {
         super(Config.class);
         this.redisTemplate = redisTemplate;
     }

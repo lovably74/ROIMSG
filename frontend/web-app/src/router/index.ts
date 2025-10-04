@@ -24,6 +24,12 @@ const routes = [
         meta: { requiresGuest: true }
       },
       {
+        path: 'register-google',
+        name: 'RegisterGoogle',
+        component: () => import('@/views/auth/RegisterGoogleView.vue'),
+        meta: { requiresGuest: true, title: 'Google 회원가입' }
+      },
+      {
         path: 'callback',
         name: 'AuthCallback',
         component: () => import('@/views/auth/CallbackView.vue'),
@@ -146,7 +152,7 @@ router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
   
   // 인증 상태 초기화 (토큰이 있는 경우)
-  if (!authStore.isAuthenticated && authStore.hasToken()) {
+  if (!authStore.isAuthenticated && authStore.hasToken) {
     try {
       await authStore.initializeAuth()
     } catch (error) {
