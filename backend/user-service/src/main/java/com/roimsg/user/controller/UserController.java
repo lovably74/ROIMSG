@@ -1,61 +1,52 @@
 package com.roimsg.user.controller;
 
+import com.roimsg.common.web.ApiResponse;
 import com.roimsg.user.entity.User;
-import com.roimsg.user.repository.UserRepository;
-import com.roimsg.user.util.JwtUtil;
-import jakarta.validation.Valid;
+import com.roimsg.user.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
-import java.util.Optional;
+import java.net.URI;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
 
-    private final UserRepository userRepository;
-    private final JwtUtil jwtUtil;
+    private final UserService userService;
 
-    public UserController(UserRepository userRepository, JwtUtil jwtUtil) {
-        this.userRepository = userRepository;
-        this.jwtUtil = jwtUtil;
+    public UserController(UserService userService) { this.userService = userService; }
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<User>>> list(@RequestParam(required = false) String q) {
+        return ResponseEntity.ok(ApiResponse.ok(userService.list(q)));
     }
 
-    @GetMapping("/me")
-    public ResponseEntity<?> me(@RequestHeader("Authorization") String authorization) {
-        String token = extract(authorization);
-        if (!jwtUtil.validate(token)) return ResponseEntity.status(401).build();
-        UUID uid = jwtUtil.getUserId(token);
-        UUID tid = jwtUtil.getTenantId(token);
-        Optional<User> user = userRepository.findByIdAndTenantId(uid, tid);
-        return user.<ResponseEntity<?>>map(ResponseEntity::ok)
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<User>> get(@PathVariable UUID id) {
+        return userService.get(id)
+                .map(u -> ResponseEntity.ok(ApiResponse.ok(u)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<?> update(@RequestHeader("Authorization") String authorization,
-                                    @PathVariable("id") UUID id,
-                                    @Valid @RequestBody Map<String, Object> payload) {
-        String token = extract(authorization);
-        if (!jwtUtil.validate(token)) return ResponseEntity.status(401).build();
-        UUID uid = jwtUtil.getUserId(token);
-        UUID tid = jwtUtil.getTenantId(token);
-        if (!uid.equals(id)) return ResponseEntity.status(403).build();
-
-        Optional<User> userOpt = userRepository.findByIdAndTenantId(uid, tid);
-        if (userOpt.isEmpty()) return ResponseEntity.notFound().build();
-
-        User u = userOpt.get();
-        if (payload.containsKey("phoneNumber")) u.setPhoneNumber((String) payload.get("phoneNumber"));
-        if (payload.containsKey("address")) u.setAddress((String) payload.get("address"));
-        userRepository.save(u);
-        return ResponseEntity.ok(u);
+    @PostMapping
+    public ResponseEntity<ApiResponse<User>> create(@RequestBody User user) {
+        User created = userService.create(user);
+        return ResponseEntity.created(URI.create("/api/users/" + created.getId()))
+                .body(ApiResponse.ok(created));
     }
 
-    private String extract(String authorization) {
-        if (authorization == null || !authorization.startsWith("Bearer ")) throw new RuntimeException("No token");
-        return authorization.substring(7);
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<User>> update(@PathVariable UUID id, @RequestBody User data) {
+        return userService.update(id, data)
+                .map(u -> ResponseEntity.ok(ApiResponse.ok(u)))
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable UUID id) {
+        userService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

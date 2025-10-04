@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.0</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>com.roimsg</groupId>
+    <artifactId>common-starter</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <name>ROIMSG Common Starter</name>
+    <description>Common utilities and configuration for ROIMSG microservices</description>
+    <packaging>jar</packaging>
+
+    <properties>
+        <java.version>21</java.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>nexus-snapshots</id>
+            <url>${nexus.snapshots.url}</url>
+        </snapshotRepository>
+        <repository>
+            <id>nexus-releases</id>
+            <url>${nexus.releases.url}</url>
+        </repository>
+    </distributionManagement>
+
+    <profiles>
+        <profile>
+            <id>nexus</id>
+            <properties>
+                <nexus.releases.url>https://nexus.example.com/repository/maven-releases/</nexus.releases.url>
+                <nexus.snapshots.url>https://nexus.example.com/repository/maven-snapshots/</nexus.snapshots.url>
+            </properties>
+        </profile>
+    </profiles>
+</project>

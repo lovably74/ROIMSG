@@ -12,14 +12,19 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     open-in-view: false
+
+  servlet:
+    multipart:
+      max-file-size: -1
+      max-request-size: -1
 
 jwt:
   secret: ${JWT_SECRET:your_super_secret_jwt_key_here_change_this_in_production}
 
 file:
   upload:
-    path: ${UPLOAD_PATH:./uploads}
-    max-size: ${MAX_FILE_SIZE:10485760}
-    allowed-types: ${ALLOWED_FILE_TYPES:jpg,jpeg,png,gif,pdf,txt}
+    path: ${UPLOAD_PATH:D:\\Data}
+    allowed-types: ${ALLOWED_FILE_TYPES:jpg,jpeg,png,gif,pdf,txt,doc,docx,xls,xlsx,ppt,pptx}
+    denied-extensions: ${DENIED_EXTENSIONS:exe,bat,cmd,sh,msi,dll,com,jar,js,vbs,ps1}
