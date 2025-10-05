@@ -151,6 +151,20 @@ public class AuthService {
 
     private String exchangeCodeForAccessToken(String code) {
         try {
+            // 환경 변수 유효성 검증
+            if (googleClientId == null || googleClientId.trim().isEmpty()) {
+                throw new RuntimeException("Google Client ID가 설정되지 않았습니다. GOOGLE_CLIENT_ID 환경 변수를 확인하세요.");
+            }
+            if (googleClientSecret == null || googleClientSecret.trim().isEmpty()) {
+                throw new RuntimeException("Google Client Secret이 설정되지 않았습니다. GOOGLE_CLIENT_SECRET 환경 변수를 확인하세요.");
+            }
+            if (googleRedirectUri == null || googleRedirectUri.trim().isEmpty()) {
+                throw new RuntimeException("Google Redirect URI가 설정되지 않았습니다. GOOGLE_REDIRECT_URI 환경 변수를 확인하세요.");
+            }
+
+            System.out.println("Google Token Exchange - Client ID: " + (googleClientId.length() > 10 ? googleClientId.substring(0, 10) + "..." : googleClientId));
+            System.out.println("Google Token Exchange - Redirect URI: " + googleRedirectUri);
+
             java.net.http.HttpClient client = java.net.http.HttpClient.newHttpClient();
             String form = "code=" + java.net.URLEncoder.encode(code, java.nio.charset.StandardCharsets.UTF_8)
                     + "&client_id=" + java.net.URLEncoder.encode(googleClientId, java.nio.charset.StandardCharsets.UTF_8)
@@ -165,13 +179,20 @@ public class AuthService {
                     .build();
 
             java.net.http.HttpResponse<String> resp = client.send(httpRequest, java.net.http.HttpResponse.BodyHandlers.ofString());
+            System.out.println("Google Token Response Status: " + resp.statusCode());
+            System.out.println("Google Token Response Body: " + resp.body());
+
             if (resp.statusCode() >= 200 && resp.statusCode() < 300) {
                 com.fasterxml.jackson.databind.JsonNode json = new com.fasterxml.jackson.databind.ObjectMapper().readTree(resp.body());
-                return json.get("access_token").asText();
+                String accessToken = json.get("access_token").asText();
+                if (accessToken == null || accessToken.isEmpty()) {
+                    throw new RuntimeException("Google에서 유효한 액세스 토큰을 받지 못했습니다.");
+                }
+                return accessToken;
             }
-            throw new RuntimeException("토큰 교환 실패: status=" + resp.statusCode());
+            throw new RuntimeException("Google 토큰 교환 실패: status=" + resp.statusCode() + ", body=" + resp.body());
         } catch (Exception e) {
-            throw new RuntimeException("Google 토큰 교환 실패", e);
+            throw new RuntimeException("Google 토큰 교환 실패: " + e.getMessage(), e);
         }
     }
 
