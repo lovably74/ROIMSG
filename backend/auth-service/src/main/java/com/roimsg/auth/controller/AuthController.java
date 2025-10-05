@@ -45,10 +45,19 @@ public class AuthController {
             @Parameter(description = "테넌트 ID") @RequestHeader(value = "X-Tenant-Id", required = false) UUID tenantId,
             HttpServletRequest request) {
         try {
+            if (code == null || code.trim().isEmpty()) {
+                return ResponseEntity.badRequest().body("Google OAuth 코드가 필요합니다.");
+            }
             Object result = authService.loginWithGoogle(code, tenantId, request);
             return ResponseEntity.ok(result);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("잘못된 요청: " + e.getMessage());
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body("Google 로그인 실패: " + e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            System.err.println("Google 로그인 오류: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
         }
     }
 
