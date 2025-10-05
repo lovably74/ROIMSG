@@ -93,16 +93,15 @@ CREATE TABLE IF NOT EXISTS board_categories (
 CREATE TABLE IF NOT EXISTS posts (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
-    category_id UUID REFERENCES board_categories(id) ON DELETE SET NULL,
     author_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     title VARCHAR(255) NOT NULL,
     content TEXT NOT NULL,
+    category VARCHAR(50) DEFAULT 'general',
     is_notice BOOLEAN DEFAULT false,
     is_secret BOOLEAN DEFAULT false,
-    view_count INTEGER DEFAULT 0,
-    like_count INTEGER DEFAULT 0,
-    dislike_count INTEGER DEFAULT 0,
-    is_active BOOLEAN DEFAULT true,
+    allow_comments BOOLEAN DEFAULT true,
+    views INTEGER DEFAULT 0,
+    likes INTEGER DEFAULT 0,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
@@ -249,6 +248,18 @@ CREATE TABLE IF NOT EXISTS system_settings (
     
     CONSTRAINT unique_tenant_setting UNIQUE (tenant_id, setting_key)
 );
+
+-- 기존 트리거 삭제 (존재하는 경우)
+DROP TRIGGER IF EXISTS update_tenants_updated_at ON tenants;
+DROP TRIGGER IF EXISTS update_users_updated_at ON users;
+DROP TRIGGER IF EXISTS update_chat_rooms_updated_at ON chat_rooms;
+DROP TRIGGER IF EXISTS update_messages_updated_at ON messages;
+DROP TRIGGER IF EXISTS update_board_categories_updated_at ON board_categories;
+DROP TRIGGER IF EXISTS update_posts_updated_at ON posts;
+DROP TRIGGER IF EXISTS update_post_comments_updated_at ON post_comments;
+DROP TRIGGER IF EXISTS update_files_updated_at ON files;
+DROP TRIGGER IF EXISTS update_user_sessions_updated_at ON user_sessions;
+DROP TRIGGER IF EXISTS update_system_settings_updated_at ON system_settings;
 
 -- 업데이트 시간 자동 갱신을 위한 트리거 함수
 CREATE OR REPLACE FUNCTION update_updated_at_column()

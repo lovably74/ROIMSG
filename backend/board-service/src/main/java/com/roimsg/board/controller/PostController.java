@@ -8,8 +8,6 @@ import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/boards")
@@ -32,7 +30,14 @@ public class PostController {
         return ResponseEntity.ok(list);
     }
 
-    public record CreatePostReq(@NotBlank String title, @NotBlank String content) {}
+    public record CreatePostReq(
+        @NotBlank String title, 
+        @NotBlank String content,
+        String category,
+        Boolean isNotice,
+        Boolean isSecret,
+        Boolean allowComments
+    ) {}
 
     @PostMapping
     public ResponseEntity<?> create(@RequestHeader("Authorization") String authorization, @Valid @RequestBody CreatePostReq body) {
@@ -45,6 +50,10 @@ public class PostController {
         p.setAuthorId(uid);
         p.setTitle(body.title());
         p.setContent(body.content());
+        p.setCategory(body.category() != null ? body.category() : "general");
+        p.setIsNotice(body.isNotice() != null ? body.isNotice() : false);
+        p.setIsSecret(body.isSecret() != null ? body.isSecret() : false);
+        p.setAllowComments(body.allowComments() != null ? body.allowComments() : true);
         postRepository.save(p);
         return ResponseEntity.ok(p);
     }

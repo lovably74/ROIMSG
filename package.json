@@ -3,9 +3,13 @@
   "version": "1.0.0",
   "description": "ROIMSG - 멀티테넌트 메시징 시스템",
   "private": true,
+  "workspaces": [
+    "frontend/web-app",
+    "shared"
+  ],
   "scripts": {
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
-    "dev:backend": "npm run dev --workspace=backend/api-gateway",
+    "dev:backend": "cd backend/api-gateway && mvn spring-boot:run",
     "dev:frontend": "npm run dev --workspace=frontend/web-app",
     "build": "npm run build --workspaces",
     "test": "npm run test --workspaces",

@@ -1,6 +1,7 @@
 package com.roimsg.auth.service;
 
 import com.roimsg.auth.dto.AuthResponse;
+import com.roimsg.auth.dto.GoogleUser;
 import com.roimsg.auth.dto.LoginRequest;
 import com.roimsg.auth.dto.UserInfo;
 import com.roimsg.auth.entity.Tenant;
@@ -46,6 +47,12 @@ public class AuthService {
      */
     public Object loginWithGoogle(String code, UUID tenantId, HttpServletRequest request) {
         try {
+            // Google OAuth 설정 검증
+            if (googleClientId == null || googleClientId.isEmpty() ||
+                googleClientSecret == null || googleClientSecret.isEmpty()) {
+                throw new RuntimeException("Google OAuth 설정이 완료되지 않았습니다. GOOGLE_CLIENT_ID와 GOOGLE_CLIENT_SECRET을 설정해주세요.");
+            }
+
             // 테넌트 ID 설정
             UUID finalTenantId = tenantId != null ? tenantId : UUID.fromString(defaultTenantId);
 
@@ -132,21 +139,13 @@ public class AuthService {
         return jwtUtil.getClaimFromToken(token, claims -> claims.get(key, String.class));
     }
 
-    private record GoogleUser(String id, String email, String name, String picture) {}
-
-    @Value("${spring.security.oauth2.client.provider.google.token-uri}")
-    private String googleTokenUri;
-
-    @Value("${spring.security.oauth2.client.provider.google.user-info-uri}")
-    private String googleUserInfoUri;
-
-    @Value("${spring.security.oauth2.client.registration.google.client-id}")
+    @Value("${spring.security.oauth2.client.registration.google.client-id:}")
     private String googleClientId;
 
-    @Value("${spring.security.oauth2.client.registration.google.client-secret}")
+    @Value("${spring.security.oauth2.client.registration.google.client-secret:}")
     private String googleClientSecret;
 
-    @Value("${spring.security.oauth2.client.registration.google.redirect-uri}")
+    @Value("${spring.security.oauth2.client.registration.google.redirect-uri:http://localhost:3000/auth/callback}")
     private String googleRedirectUri;
 
     private String exchangeCodeForAccessToken(String code) {
@@ -159,7 +158,7 @@ public class AuthService {
                     + "&grant_type=authorization_code";
 
             java.net.http.HttpRequest httpRequest = java.net.http.HttpRequest.newBuilder()
-                    .uri(java.net.URI.create(googleTokenUri))
+                    .uri(java.net.URI.create("https://oauth2.googleapis.com/token"))
                     .header("Content-Type", "application/x-www-form-urlencoded")
                     .POST(java.net.http.HttpRequest.BodyPublishers.ofString(form))
                     .build();
@@ -179,7 +178,7 @@ public class AuthService {
         try {
             java.net.http.HttpClient client = java.net.http.HttpClient.newHttpClient();
             java.net.http.HttpRequest httpRequest = java.net.http.HttpRequest.newBuilder()
-                    .uri(java.net.URI.create(googleUserInfoUri))
+                    .uri(java.net.URI.create("https://www.googleapis.com/oauth2/v2/userinfo"))
                     .header("Authorization", "Bearer " + googleAccessToken)
                     .GET()
                     .build();

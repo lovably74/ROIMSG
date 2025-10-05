@@ -9,12 +9,12 @@ spring:
     exclude:
       - org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientAutoConfiguration
   
-  # 데이터베이스 설정
+  # 데이터베이스 설정 (H2 인메모리)
   datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:postgres}
-    username: ${DB_USER:roit}
-    password: ${DB_PASSWORD:fhdlxpzm1*}
-    driver-class-name: org.postgresql.Driver
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password: 
+    driver-class-name: org.h2.Driver
     hikari:
       maximum-pool-size: 20
       minimum-idle: 5
@@ -25,15 +25,19 @@ spring:
   # JPA 설정
   jpa:
     hibernate:
-      ddl-auto: update
-    show-sql: false
+      ddl-auto: create-drop
+    show-sql: true
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
+        dialect: org.hibernate.dialect.H2Dialect
         format_sql: true
-        jdbc:
-          time_zone: Asia/Seoul
     open-in-view: false
+
+  # H2 콘솔 설정
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
 
   # Redis 설정
   data:
@@ -55,8 +59,8 @@ spring:
       client:
         registration:
           google:
-            client-id: ${GOOGLE_CLIENT_ID:}
-            client-secret: ${GOOGLE_CLIENT_SECRET:}
+            client-id: ${GOOGLE_CLIENT_ID:386472545089-nms9v0b856h10q9dp380gn4t9oukbtfg.apps.googleusercontent.com}
+            client-secret: ${GOOGLE_CLIENT_SECRET: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}
             scope:
               - openid
               - profile
@@ -71,7 +75,7 @@ spring:
 
 # JWT 설정
 jwt:
-  secret: ${JWT_SECRET:your_super_secret_jwt_key_here_change_this_in_production}
+  secret: ${JWT_SECRET:your_super_secret_jwt_key_here_change_this_in_production_at_least_32_characters_long}
   expiration: ${JWT_EXPIRATION:86400}
   refresh-expiration: ${JWT_REFRESH_EXPIRATION:604800}
   signup-expiration: ${JWT_SIGNUP_EXPIRATION:600}

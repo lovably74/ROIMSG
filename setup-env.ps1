@@ -20,8 +20,8 @@ DB_PASSWORD=fhdlxpzm1*
 # ===========================================
 # Google OAuth 2.0 설정
 # ===========================================
-GOOGLE_CLIENT_ID=your_google_client_id_here
-GOOGLE_CLIENT_SECRET=your_google_client_secret_here
+GOOGLE_CLIENT_ID=386472545089-nms9v0b856h10q9dp380gn4t9oukbtfg.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=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
 GOOGLE_REDIRECT_URI=http://localhost:3000/auth/callback
 
 # ===========================================

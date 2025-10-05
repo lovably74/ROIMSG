@@ -1,0 +1,15 @@
+{
+  "cursor.cpp.disabledLanguages": [],
+  "cursor.cpp.enabledLanguages": ["javascript", "typescript", "python", "java", "vue", "html", "css", "scss", "json", "yaml", "markdown"],
+  "cursor.general.enableCodex": true,
+  "cursor.general.enableAIChat": true,
+  "cursor.general.enableInlineEdit": true,
+  "cursor.mcp.enabled": true,
+  "cursor.mcp.autoRestart": true,
+  "cursor.mcp.logLevel": "debug",
+  "cursor.ai.enabled": true,
+  "cursor.ai.model": "gpt-4",
+  "cursor.ai.maxTokens": 4000,
+  "cursor.ai.temperature": 0.7
+}
+

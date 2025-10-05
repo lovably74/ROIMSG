@@ -52,8 +52,8 @@ CREATE INDEX IF NOT EXISTS idx_posts_view_count ON posts(view_count);
 CREATE INDEX IF NOT EXISTS idx_posts_like_count ON posts(like_count);
 
 -- 게시글 제목 및 내용 검색을 위한 텍스트 인덱스
-CREATE INDEX IF NOT EXISTS idx_posts_title_gin ON posts USING gin(to_tsvector('korean', title));
-CREATE INDEX IF NOT EXISTS idx_posts_content_gin ON posts USING gin(to_tsvector('korean', content));
+CREATE INDEX IF NOT EXISTS idx_posts_title_gin ON posts USING gin(to_tsvector('english', title));
+CREATE INDEX IF NOT EXISTS idx_posts_content_gin ON posts USING gin(to_tsvector('english', content));
 
 -- 게시글 댓글 관련 인덱스
 CREATE INDEX IF NOT EXISTS idx_post_comments_tenant_id ON post_comments(tenant_id);
@@ -85,8 +85,8 @@ CREATE INDEX IF NOT EXISTS idx_files_download_count ON files(download_count);
 CREATE INDEX IF NOT EXISTS idx_files_mime_type ON files(mime_type);
 
 -- 파일명 검색을 위한 텍스트 인덱스
-CREATE INDEX IF NOT EXISTS idx_files_name_gin ON files USING gin(to_tsvector('korean', file_name));
-CREATE INDEX IF NOT EXISTS idx_files_original_name_gin ON files USING gin(to_tsvector('korean', original_name));
+CREATE INDEX IF NOT EXISTS idx_files_name_gin ON files USING gin(to_tsvector('english', file_name));
+CREATE INDEX IF NOT EXISTS idx_files_original_name_gin ON files USING gin(to_tsvector('english', original_name));
 
 -- 파일-태그 연결 관련 인덱스
 CREATE INDEX IF NOT EXISTS idx_file_tags_tenant_id ON file_tags(tenant_id);
