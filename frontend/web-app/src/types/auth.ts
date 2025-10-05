@@ -4,18 +4,18 @@
 
 export interface User {
   id: string
-  tenantId: string
-  googleId?: string
+  tenant_id: string
+  google_id?: string
   email: string
   name: string
-  profileImageUrl?: string
-  phoneNumber?: string
+  profile_image_url?: string
+  phone_number?: string
   address?: string
-  customProfileImageUrl?: string
-  isActive: boolean
-  lastLoginAt?: string
-  createdAt: string
-  updatedAt: string
+  custom_profile_image_url?: string
+  is_active: boolean
+  last_login_at?: string
+  created_at: string
+  updated_at: string
 }
 
 export interface LoginRequest {

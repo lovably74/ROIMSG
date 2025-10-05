@@ -26,8 +26,8 @@ api.interceptors.request.use(
     }
 
     // 테넌트 ID 헤더 추가
-    if (authStore.user?.tenantId) {
-      config.headers['X-Tenant-Id'] = authStore.user.tenantId
+    if (authStore.user?.tenant_id) {
+      config.headers['X-Tenant-Id'] = authStore.user.tenant_id
     }
 
     return config
@@ -87,7 +87,7 @@ export const authApi = {
     return {
       accessToken: d.access_token,
       refreshToken: d.refresh_token,
-      tokenType: d.token_type,
+      tokenType: d.token_type || 'Bearer',
       expiresIn: d.expires_in,
       user: d.user
     }
@@ -107,7 +107,7 @@ export const authApi = {
         auth: {
           accessToken: a.access_token,
           refreshToken: a.refresh_token,
-          tokenType: a.token_type,
+          tokenType: a.token_type || 'Bearer',
           expiresIn: a.expires_in,
           user: a.user
         }
@@ -130,7 +130,7 @@ export const authApi = {
     return {
       accessToken: d.access_token,
       refreshToken: d.refresh_token,
-      tokenType: d.token_type,
+      tokenType: d.token_type || 'Bearer',
       expiresIn: d.expires_in,
       user: d.user
     }
@@ -176,7 +176,7 @@ export const authApi = {
     return {
       accessToken: d.access_token,
       refreshToken: d.refresh_token,
-      tokenType: d.token_type,
+      tokenType: d.token_type || 'Bearer',
       expiresIn: d.expires_in,
       user: d.user
     }
