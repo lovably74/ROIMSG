@@ -63,7 +63,7 @@ public class AuthService {
             GoogleUser googleUser = fetchGoogleUser(accessTokenFromGoogle);
 
             // 3) 사용자 조회
-            Optional<User> existingUser = userRepository.findByTenantIdAndGoogleId(finalTenantId, googleUser.id);
+            Optional<User> existingUser = userRepository.findByTenantIdAndGoogleId(finalTenantId, googleUser.getId());
             if (existingUser.isPresent()) {
                 User user = existingUser.get();
                 // 로그인 시간 업데이트
@@ -83,8 +83,8 @@ public class AuthService {
             }
 
             // 4) 회원가입 필요: 사전가입 토큰 생성 (단기 유효)
-            String signupToken = jwtUtil.generateSignupToken(finalTenantId, googleUser.id, googleUser.email, googleUser.name, googleUser.picture);
-            com.roimsg.auth.dto.GoogleProfile profile = new com.roimsg.auth.dto.GoogleProfile(googleUser.email, googleUser.name, googleUser.picture);
+            String signupToken = jwtUtil.generateSignupToken(finalTenantId, googleUser.getId(), googleUser.getEmail(), googleUser.getName(), googleUser.getPicture());
+            com.roimsg.auth.dto.GoogleProfile profile = new com.roimsg.auth.dto.GoogleProfile(googleUser.getEmail(), googleUser.getName(), googleUser.getPicture());
             return com.roimsg.auth.dto.GooglePreSignupResponse.needSignup(signupToken, profile);
 
         } catch (Exception e) {

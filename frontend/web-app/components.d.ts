@@ -12,6 +12,5 @@ declare module 'vue' {
     ToastEditor: typeof import('./src/components/ToastEditor.vue')['default']
     ToastFileUploader: typeof import('./src/components/ToastFileUploader.vue')['default']
     ToastGrid: typeof import('./src/components/ToastGrid.vue')['default']
-    VListItemIcon: typeof import('vuetify/components')['VListItemIcon']
   }
 }

@@ -24,6 +24,9 @@ ROIMSG 프로젝트는 멀티테넌시 단일 DB와 기능 단위 MSA 아키텍�
 #### 회원 관리 (User Management)
 - **회원 가입/로그인**: Google 계정 연동 (OAuth 2.0)
   - Google 계정으로 사용자 인증 및 기본 정보 (이름, 이메일, 프로필 사진 URL 등) 자동 수신 및 저장
+  - 개발환경에서는 구글 계정 사용시 아래 정보를 사용한다. 테스트서버 및 운영서버는 별도 설정을 한다.
+    *클라이언트 ID : 386472545089-nms9v0b856h10q9dp380gn4t9oukbtfg.apps.googleusercontent.com
+    *클라이언트 보안 비밀번호 : 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
   - 최초 로그인 시 신규 회원으로 자동 가입 처리
 - **회원 정보 관리**:
   - Google 계정으로 받은 기본 정보 (이름, 이메일) 조회

@@ -122,57 +122,68 @@ ROIMSG/
 
 ## 🚀 빠른 시작
 
+> **💡 신규 개발자?** 상세한 설치 가이드는 **[개발환경 구축 가이드](./docs/개발환경-구축-가이드.md)**를 참고하세요!
+
 ### 사전 요구사항
 
 - **Node.js** 18.0.0 이상
 - **Java** 21 이상
-- **PostgreSQL** 15 이상
-- **Redis** 7.0 이상
+- **Maven** 3.9.0 이상
+- **Redis** 7.0 이상 (권장)
+- **PostgreSQL** 15 이상 (선택사항, 개발 시 H2 사용 가능)
 - **Git**
 
-### 설치 및 실행
+### 빠른 시작 (Windows)
 
 1. **저장소 클론**
-   ```bash
+   ```powershell
    git clone https://github.com/roimsg/roimsg.git
    cd roimsg
    ```
 
-2. **의존성 설치**
-   ```bash
+2. **환경 변수 설정**
+   ```powershell
+   # Google OAuth (개발용 계정)
+   $env:GOOGLE_CLIENT_ID = "386472545089-nms9v0b856h10q9dp380gn4t9oukbtfg.apps.googleusercontent.com"
+   $env:GOOGLE_CLIENT_SECRET = "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"
+   $env:GOOGLE_REDIRECT_URI = "http://localhost:3000/auth/callback"
+   
+   # 프론트엔드
+   $env:VITE_API_BASE_URL = "http://localhost:8080"
+   $env:VITE_GOOGLE_CLIENT_ID = "386472545089-nms9v0b856h10q9dp380gn4t9oukbtfg.apps.googleusercontent.com"
+   $env:VITE_GOOGLE_REDIRECT_URI = "http://localhost:3000/auth/callback"
+   ```
+
+3. **백엔드 서비스 실행**
+   ```powershell
+   # Common Starter 빌드 (최초 1회)
+   cd backend\common-starter
+   mvn clean install -DskipTests
+   cd ..\..
+   
+   # 모든 백엔드 서비스 실행
+   .\start-backend-services.ps1
+   ```
+
+4. **프론트엔드 실행**
+   ```powershell
+   # 새 PowerShell 창에서
+   cd frontend\web-app
    npm install
-   ```
-
-3. **데이터베이스 설정**
-   ```bash
-   # PostgreSQL 데이터베이스 생성
-   createdb ROIMSG
-   
-   # 데이터베이스 설정 스크립트 실행
-   npm run setup:db
-   ```
-
-4. **환경 변수 설정**
-   ```bash
-   # .env 파일 생성 및 설정
-   cp .env.example .env
-   # .env 파일을 편집하여 필요한 설정값 입력
-   ```
-
-5. **개발 서버 실행**
-   ```bash
-   # 모든 서비스 동시 실행
    npm run dev
-   
-   # 또는 개별 실행
-   npm run dev:backend  # 백엔드만
-   npm run dev:frontend # 프론트엔드만
    ```
 
-6. **애플리케이션 접속**
+5. **애플리케이션 접속**
    - 웹 애플리케이션: http://localhost:3000
    - API Gateway: http://localhost:8080
-   - API 문서: http://localhost:8080/swagger-ui.html
+   - Auth API 문서: http://localhost:8081/swagger-ui.html
+   - H2 Console (개발 DB): http://localhost:8081/h2-console
+
+### 상세 가이드
+
+- 📖 **[개발환경 구축 가이드](./docs/개발환경-구축-가이드.md)** - 처음부터 끝까지 상세한 설치 가이드
+- 🔧 **[빌드 및 실행](./docs/빌드%20및%20실행.md)** - 각 모듈별 빌드 및 실행 방법
+- ⚙️ **[환경설정](./docs/환경설정.md)** - 로컬/테스트/운영 환경설정
 
 ## 🔧 개발 환경 설정
 
@@ -215,12 +226,26 @@ ROIMSG/
 
 ## 📚 문서
 
+### 시작하기
+- **[개발환경 구축 가이드](./docs/개발환경-구축-가이드.md)** ⭐ **신규 개발자 필독!**
+- [빌드 및 실행](./docs/빌드%20및%20실행.md)
+
+### 아키텍처 및 설계
+- [시스템구성](./docs/시스템구성.md)
+- [아키텍처구성](./docs/아키텍처구성.md)
+- [기능구성 및 설명](./docs/기능구성%20및%20설명.md)
+
+### 개발 표준
+- [개발표준문서](./docs/개발표준문서.md)
+- [환경설정](./docs/환경설정.md)
+
+### 기획 및 요구사항
 - [제품 요구사항 정의서 (PRD)](./docs/PRD-v1.1.md)
 - [구현 체크리스트](./docs/Implementation-Checklist.md)
 - [UI 스타일 가이드](./docs/UI-Style-Guide.md)
-- [API 문서](http://localhost:8080/swagger-ui.html)
-- [개발 가이드](./docs/development-guide.md)
-- [배포 가이드](./docs/deployment-guide.md)
+
+### API 문서
+- [Swagger UI](http://localhost:8080/swagger-ui.html) (로컬 실행 시)
 
 ## 🧪 테스트
 

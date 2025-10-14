@@ -8,6 +8,7 @@ spring:
   autoconfigure:
     exclude:
       - org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
   
   # 데이터베이스 설정 (H2 인메모리)
   datasource:
@@ -60,7 +61,7 @@ spring:
         registration:
           google:
             client-id: ${GOOGLE_CLIENT_ID:386472545089-nms9v0b856h10q9dp380gn4t9oukbtfg.apps.googleusercontent.com}
-            client-secret: ${GOOGLE_CLIENT_SECRET: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}
+            client-secret: ${GOOGLE_CLIENT_SECRET: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}
             scope:
               - openid
               - profile
